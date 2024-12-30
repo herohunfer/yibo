@@ -6,7 +6,7 @@ class NewsFeed {
         this.isDragging = false;
         this.startY = 0;
         this.currentY = 0;
-        this.newsPool = this.getNewsPool(); // 存储新闻数据
+        this.gistId = '1234567890abcdef'; // 替换为你的 Gist ID
         
         this.setupPullToRefresh();
         this.loadInitialNews();
@@ -111,22 +111,16 @@ class NewsFeed {
     }
 
     // 获取新闻数据池
-    getNewsPool() {
-        return [
-            {
-                title: '王一博最新动态',
-                content: '今日参加某品牌活动现场，与粉丝互动...',
-                image: 'https://wx1.sinaimg.cn/large/005ZZktely1hj8x2f4n66j31hc0u07wh.jpg',
-                date: new Date().toLocaleDateString()
-            },
-            {
-                title: '王一博出席活动',
-                content: '身着黑色西装亮相，展现成熟魅力...',
-                image: 'https://wx1.sinaimg.cn/large/005ZZktely1hj8x2f4n66j31hc0u07wh.jpg',
-                date: new Date().toLocaleDateString()
-            },
-            // 添加更多新闻...
-        ];
+    async getNewsPool() {
+        try {
+            const response = await fetch(`https://api.github.com/gists/${this.gistId}`);
+            const gist = await response.json();
+            const content = gist.files['news.json'].content;
+            return JSON.parse(content).news;
+        } catch (error) {
+            console.error('获取新闻失败:', error);
+            return this.getFallbackNews(); // 返回静态数据作为后备
+        }
     }
 
     async loadInitialNews() {
