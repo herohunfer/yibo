@@ -1,1 +1,35 @@
- 
+#pull-to-refresh {
+    position: fixed;
+    top: -60px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    padding: 20px;
+    color: #666;
+    background: rgba(255, 255, 255, 0.9);
+    display: none;
+    z-index: 1000;
+    cursor: pointer;
+    user-select: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+#pull-to-refresh i {
+    margin-right: 8px;
+}
+
+#pull-to-refresh i.fa-spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.feed-container {
+    max-width: 680px;
+    margin: 80px auto 20px;
+    padding: 0 15px;
+    min-height: 100vh; /* 确保有足够的内容可以滚动 */
+} 
