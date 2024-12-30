@@ -27,9 +27,16 @@
     to { transform: rotate(360deg); }
 }
 
+body {
+    overflow-y: scroll; /* 确保总是显示滚动条 */
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
 .feed-container {
     max-width: 680px;
     margin: 80px auto 20px;
     padding: 0 15px;
-    min-height: 100vh; /* 确保有足够的内容可以滚动 */
+    min-height: calc(100vh - 100px); /* 确保有足够的滚动空间 */
 } 

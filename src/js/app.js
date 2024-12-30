@@ -6,6 +6,7 @@ class NewsFeed {
         this.isDragging = false;
         this.startY = 0;
         this.currentY = 0;
+        this.newsPool = this.getNewsPool(); // 存储新闻数据
         
         this.setupPullToRefresh();
         this.loadInitialNews();
@@ -67,6 +68,18 @@ class NewsFeed {
                 document.body.style.userSelect = '';
             }
         });
+
+        // 添加滚轮事件处理
+        document.addEventListener('wheel', (e) => {
+            if (window.scrollY === 0 && e.deltaY < 0) { // deltaY < 0 表示向上滚动
+                const pullDistance = Math.abs(e.deltaY);
+                this.handlePull(pullDistance);
+                
+                if (pullDistance > 50) {
+                    this.handlePullEnd(pullDistance);
+                }
+            }
+        }, { passive: true });
     }
 
     handlePull(pullDistance) {
@@ -97,5 +110,75 @@ class NewsFeed {
         }, 300);
     }
 
+    // 获取新闻数据池
+    getNewsPool() {
+        return [
+            {
+                title: '王一博最新动态',
+                content: '今日参加某品牌活动现场，与粉丝互动...',
+                image: 'https://wx1.sinaimg.cn/large/005ZZktely1hj8x2f4n66j31hc0u07wh.jpg',
+                date: new Date().toLocaleDateString()
+            },
+            {
+                title: '王一博出席活动',
+                content: '身着黑色西装亮相，展现成熟魅力...',
+                image: 'https://wx1.sinaimg.cn/large/005ZZktely1hj8x2f4n66j31hc0u07wh.jpg',
+                date: new Date().toLocaleDateString()
+            },
+            // 添加更多新闻...
+        ];
+    }
+
+    async loadInitialNews() {
+        const initialNews = this.newsPool.slice(0, 3); // 初始加载3条新闻
+        this.renderNews(initialNews);
+    }
+
+    async refreshNews() {
+        if (this.isLoading) return;
+        
+        this.isLoading = true;
+        this.pullToRefreshElement.innerHTML = '<i class="fas fa-sync fa-spin"></i> 刷新中...';
+
+        // 模拟加载新数据
+        setTimeout(() => {
+            const newNews = [{
+                title: `王一博最新动态 ${new Date().toLocaleTimeString()}`,
+                content: '刚刚更新：王一博参加新活动，与粉丝互动热情似火...',
+                image: 'https://wx1.sinaimg.cn/large/005ZZktely1hj8x2f4n66j31hc0u07wh.jpg',
+                date: new Date().toLocaleDateString()
+            }];
+            
+            // 在顶部添加新内容
+            this.newsFeed.innerHTML = '';
+            this.renderNews([...newNews, ...this.newsPool.slice(0, 2)]);
+            
+            // 更新新闻池
+            this.newsPool = [...newNews, ...this.newsPool];
+            
+            this.isLoading = false;
+            this.pullToRefreshElement.innerHTML = '<i class="fas fa-sync"></i> 刷新成功';
+        }, 1000);
+    }
+
+    renderNews(newsItems) {
+        newsItems.forEach(news => {
+            const newsElement = document.createElement('div');
+            newsElement.className = 'news-item';
+            newsElement.innerHTML = `
+                <h3>${news.title}</h3>
+                <p>${news.content}</p>
+                ${news.image ? `<img src="${news.image}" alt="${news.title}">` : ''}
+                <div class="date">${news.date}</div>
+            `;
+            this.newsFeed.appendChild(newsElement);
+        });
+    }
+
     // ... 其他现有方法保持不变 ...
-} 
+}
+
+// 初始化
+document.addEventListener('DOMContentLoaded', () => {
+    new NewsFeed();
+}); 
